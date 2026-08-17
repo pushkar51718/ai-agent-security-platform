@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Panel - AI Agent Security Platform</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #f8fafc;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-top: 8px;
+        }
+
+        .card {
+            background: #1e293b;
+            border-radius: 14px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,.25);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns:
+                1fr 1fr 180px auto;
+
+            gap: 12px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: white;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #3b82f6;
+        }
+
+        button {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 16px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+        }
+
+        .create-btn {
+            background: #16a34a;
+        }
+
+        .create-btn:hover {
+            background: #15803d;
+        }
+
+        .back-btn {
+            background: #2563eb;
+        }
+
+        .back-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .delete-btn {
+            background: #dc2626;
+        }
+
+        .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        .save-btn {
+            background: #7c3aed;
+        }
+
+        .save-btn:hover {
+            background: #6d28d9;
+        }
+
+        .protected {
+            color: #facc15;
+            font-weight: bold;
+        }
+
+        .message {
+            display: none;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .success {
+            display: block;
+            background: #14532d;
+            color: #bbf7d0;
+        }
+
+        .error {
+            display: block;
+            background: #7f1d1d;
+            color: #fecaca;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 14px 12px;
+            text-align: left;
+            border-bottom: 1px solid #334155;
+        }
+
+        th {
+            background: #0f172a;
+            color: #93c5fd;
+        }
+
+        td {
+            vertical-align: middle;
+        }
+
+        .role-admin {
+            color: #c4b5fd;
+            font-weight: bold;
+        }
+
+        .role-security {
+            color: #67e8f9;
+            font-weight: bold;
+        }
+
+        .role-user {
+            color: #86efac;
+            font-weight: bold;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .actions select {
+            width: 160px;
+        }
+
+        .count {
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            color: #93c5fd;
+        }
+
+        @media (max-width: 800px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .actions select {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- ================================================= -->
+    <!-- HEADER -->
+    <!-- ================================================= -->
+
+    <div class="header">
+
+        <div>
+
+            <h1>
+                👑 Administrator Panel
+            </h1>
+
+            <div
+                class="subtitle"
+                id="loggedInfo"
+            >
+                Loading...
+            </div>
+
+        </div>
+
+
+        <button
+            class="back-btn"
+            id="backButton"
+        >
+            ← Back to Dashboard
+        </button>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- CREATE USER -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <h2>
+            Create New User
+        </h2>
+
+        <p class="subtitle">
+            Create an account and assign its role.
+        </p>
+
+
+        <div class="form-grid">
+
+            <input
+                id="newUsername"
+                type="text"
+                placeholder="Username"
+                autocomplete="off"
+            >
+
+
+            <input
+                id="newPassword"
+                type="password"
+                placeholder="Password"
+                autocomplete="new-password"
+            >
+
+
+            <select id="newRole">
+
+                <option value="user">
+                    User
+                </option>
+
+                <option value="security_analyst">
+                    Security Analyst
+                </option>
+
+                <option value="admin">
+                    Admin
+                </option>
+
+            </select>
+
+
+            <button
+                class="create-btn"
+                id="createUserButton"
+            >
+                CREATE USER
+            </button>
+
+        </div>
+
+
+        <div
+            id="createMessage"
+            class="message"
+        ></div>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- USER MANAGEMENT -->
+    <!-- ================================================= -->
+
+    <div class="card">
+
+        <h2>
+            User Management
+        </h2>
+
+        <div
+            class="count"
+            id="userCount"
+        >
+            Loading users...
+        </div>
+
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Username
+                        </th>
+
+                        <th>
+                            Role
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="usersTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="3"
+                            class="loading"
+                        >
+                            Loading users...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+
+// =========================================================
+// AUTHENTICATION
+// =========================================================
+
+const token =
+    localStorage.getItem(
+        "access_token"
+    );
+
+
+const username =
+    localStorage.getItem(
+        "username"
+    );
+
+
+const role =
+    localStorage.getItem(
+        "role"
+    );
+
+
+if (!token) {
+
+    window.location.href = "/";
+
+}
+
+
+// =========================================================
+// CHECK ADMIN
+// =========================================================
+
+if (
+    String(role || "")
+        .toLowerCase()
+        .trim() !== "admin"
+) {
+
+    alert(
+        "Administrator privileges required."
+    );
+
+    window.location.href =
+        "/dashboard";
+
+}
+
+
+// =========================================================
+// ELEMENTS
+// =========================================================
+
+const usersTableBody =
+    document.getElementById(
+        "usersTableBody"
+    );
+
+
+const userCount =
+    document.getElementById(
+        "userCount"
+    );
+
+
+const loggedInfo =
+    document.getElementById(
+        "loggedInfo"
+    );
+
+
+const newUsername =
+    document.getElementById(
+        "newUsername"
+    );
+
+
+const newPassword =
+    document.getElementById(
+        "newPassword"
+    );
+
+
+const newRole =
+    document.getElementById(
+        "newRole"
+    );
+
+
+const createUserButton =
+    document.getElementById(
+        "createUserButton"
+    );
+
+
+const createMessage =
+    document.getElementById(
+        "createMessage"
+    );
+
+
+const backButton =
+    document.getElementById(
+        "backButton"
+    );
+
+
+// =========================================================
+// USER INFO
+// =========================================================
+
+loggedInfo.textContent =
+    `Logged in as: ${username || "admin"} | Role: ADMIN`;
+
+
+// =========================================================
+// API HELPER
+// =========================================================
+
+async function apiRequest(
+    url,
+    options = {}
+) {
+
+    const headers = {
+
+        "Authorization":
+            `Bearer ${token}`
+
+    };
+
+
+    if (
+        options.body
+    ) {
+
+        headers[
+            "Content-Type"
+        ] =
+            "application/json";
+
+    }
+
+
+    const response =
+        await fetch(
+            url,
+            {
+
+                ...options,
+
+                headers: {
+
+                    ...headers,
+
+                    ...(options.headers || {})
+
+                }
+
+            }
+        );
+
+
+    if (
+        response.status === 401
+    ) {
+
+        localStorage.clear();
+
+        window.location.href = "/";
+
+        return null;
+
+    }
+
+
+    return response;
+
+}
+
+
+// =========================================================
+// LOAD USERS
+// =========================================================
+
+async function loadUsers() {
+
+    usersTableBody.innerHTML = `
+
+        <tr>
+
+            <td
+                colspan="3"
+                class="loading"
+            >
+                Loading users...
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+        const response =
+            await apiRequest(
+                "/admin/users",
+                {
+                    method: "GET"
+                }
+            );
+
+
+        if (!response) {
+            return;
+        }
+
+
+        if (
+            response.status === 403
+        ) {
+
+            alert(
+                "Access denied. Admin privileges required."
+            );
+
+            window.location.href =
+                "/dashboard";
+
+            return;
+
+        }
+
+
+        if (!response.ok) {
+
+            const data =
+                await response
+                    .json()
+                    .catch(
+                        () => null
+                    );
+
+            throw new Error(
+                data?.detail ||
+                "Unable to load users."
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        const users =
+            Array.isArray(
+                data.users
+            )
+                ? data.users
+                : [];
+
+
+        userCount.textContent =
+            `Total users: ${users.length}`;
+
+
+        usersTableBody.innerHTML =
+            "";
+
+
+        if (
+            users.length === 0
+        ) {
+
+            usersTableBody.innerHTML = `
+
+                <tr>
+
+                    <td
+                        colspan="3"
+                    >
+                        No users found.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        users.forEach(
+            user => {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                const userRole =
+                    String(
+                        user.role || "user"
+                    )
+                    .toLowerCase();
+
+
+                let roleClass =
+                    "role-user";
+
+
+                if (
+                    userRole === "admin"
+                ) {
+
+                    roleClass =
+                        "role-admin";
+
+                }
+                else if (
+                    userRole ===
+                    "security_analyst"
+                ) {
+
+                    roleClass =
+                        "role-security";
+
+                }
+
+
+                // -----------------------------------------
+                // PROTECT MAIN ADMIN / CURRENT ADMIN
+                // -----------------------------------------
+
+                const protectedUser =
+                    user.username ===
+                    username;
+
+
+                row.innerHTML = `
+
+                    <td>
+
+                        <strong>
+                            ${escapeHtml(
+                                user.username
+                            )}
+                        </strong>
+
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="${roleClass}"
+                        >
+                            ${escapeHtml(
+                                user.role
+                            )}
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        ${
+                            protectedUser
+
+                            ?
+
+                            `
+
+                                <span
+                                    class="protected"
+                                >
+                                    🔒 Protected
+                                </span>
+
+                            `
+
+                            :
+
+                            `
+
+                                <div
+                                    class="actions"
+                                >
+
+                                    <select
+                                        class="role-select"
+                                        data-username="${escapeHtml(
+                                            user.username
+                                        )}"
+                                    >
+
+                                        <option
+                                            value="user"
+                                            ${
+                                                userRole ===
+                                                "user"
+                                                    ? "selected"
+                                                    : ""
+                                            }
+                                        >
+                                            User
+                                        </option>
+
+
+                                        <option
+                                            value="security_analyst"
+                                            ${
+                                                userRole ===
+                                                "security_analyst"
+                                                    ? "selected"
+                                                    : ""
+                                            }
+                                        >
+                                            Security Analyst
+                                        </option>
+
+
+                                        <option
+                                            value="admin"
+                                            ${
+                                                userRole ===
+                                                "admin"
+                                                    ? "selected"
+                                                    : ""
+                                            }
+                                        >
+                                            Admin
+                                        </option>
+
+                                    </select>
+
+
+                                    <button
+                                        class="save-btn update-role-button"
+                                        data-username="${escapeHtml(
+                                            user.username
+                                        )}"
+                                    >
+                                        SAVE ROLE
+                                    </button>
+
+
+                                    <button
+                                        class="delete-btn delete-user-button"
+                                        data-username="${escapeHtml(
+                                            user.username
+                                        )}"
+                                    >
+                                        DELETE
+                                    </button>
+
+                                </div>
+
+                            `
+                        }
+
+                    </td>
+
+                `;
+
+
+                usersTableBody.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+        attachUserActions();
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "LOAD USERS ERROR:",
+            error
+        );
+
+
+        usersTableBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="3"
+                    style="color:#fca5a5"
+                >
+                    ${escapeHtml(
+                        error.message
+                    )}
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+// =========================================================
+// ATTACH USER ACTIONS
+// =========================================================
+
+function attachUserActions() {
+
+
+    // =====================================================
+    // UPDATE ROLE
+    // =====================================================
+
+    document
+        .querySelectorAll(
+            ".update-role-button"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    async function () {
+
+                        const targetUsername =
+                            this.dataset.username;
+
+
+                        const select =
+                            document.querySelector(
+                                `.role-select[data-username="${CSS.escape(
+                                    targetUsername
+                                )}"]`
+                            );
+
+
+                        if (!select) {
+
+                            return;
+
+                        }
+
+
+                        const selectedRole =
+                            select.value;
+
+
+                        this.disabled =
+                            true;
+
+
+                        try {
+
+                            const response =
+                                await apiRequest(
+
+                                    `/admin/users/${encodeURIComponent(
+                                        targetUsername
+                                    )}/role`,
+
+                                    {
+
+                                        method:
+                                            "PUT",
+
+                                        body:
+                                            JSON.stringify({
+
+                                                role:
+                                                    selectedRole
+
+                                            })
+
+                                    }
+
+                                );
+
+
+                            if (!response) {
+                                return;
+                            }
+
+
+                            const data =
+                                await response
+                                    .json()
+                                    .catch(
+                                        () => null
+                                    );
+
+
+                            if (
+                                !response.ok
+                            ) {
+
+                                throw new Error(
+                                    data?.detail ||
+                                    "Unable to update user role."
+                                );
+
+                            }
+
+
+                            alert(
+                                "User role updated successfully."
+                            );
+
+
+                            await loadUsers();
+
+                        }
+                        catch (error) {
+
+                            console.error(
+                                "UPDATE ROLE ERROR:",
+                                error
+                            );
+
+
+                            alert(
+                                error.message
+                            );
+
+                        }
+                        finally {
+
+                            this.disabled =
+                                false;
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+
+    // =====================================================
+    // DELETE USER
+    // =====================================================
+
+    document
+        .querySelectorAll(
+            ".delete-user-button"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    async function () {
+
+                        const targetUsername =
+                            this.dataset.username;
+
+
+                        const confirmed =
+                            confirm(
+                                `Are you sure you want to delete "${targetUsername}"?`
+                            );
+
+
+                        if (!confirmed) {
+
+                            return;
+
+                        }
+
+
+                        this.disabled =
+                            true;
+
+
+                        try {
+
+                            const response =
+                                await apiRequest(
+
+                                    `/admin/users/${encodeURIComponent(
+                                        targetUsername
+                                    )}`,
+
+                                    {
+
+                                        method:
+                                            "DELETE"
+
+                                    }
+
+                                );
+
+
+                            if (!response) {
+                                return;
+                            }
+
+
+                            const data =
+                                await response
+                                    .json()
+                                    .catch(
+                                        () => null
+                                    );
+
+
+                            if (
+                                !response.ok
+                            ) {
+
+                                throw new Error(
+                                    data?.detail ||
+                                    "Unable to delete user."
+                                );
+
+                            }
+
+
+                            alert(
+                                "User deleted successfully."
+                            );
+
+
+                            await loadUsers();
+
+                        }
+                        catch (error) {
+
+                            console.error(
+                                "DELETE USER ERROR:",
+                                error
+                            );
+
+
+                            alert(
+                                error.message
+                            );
+
+                        }
+                        finally {
+
+                            this.disabled =
+                                false;
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+// =========================================================
+// CREATE USER
+// =========================================================
+
+createUserButton.addEventListener(
+    "click",
+    async function () {
+
+        const enteredUsername =
+            newUsername.value.trim();
+
+
+        const enteredPassword =
+            newPassword.value;
+
+
+        const enteredRole =
+            newRole.value;
+
+
+        createMessage.className =
+            "message";
+
+
+        createMessage.textContent =
+            "";
+
+
+        // -----------------------------------------------
+        // VALIDATION
+        // -----------------------------------------------
+
+        if (!enteredUsername) {
+
+            showMessage(
+                "Username is required.",
+                false
+            );
+
+            return;
+
+        }
+
+
+        if (!enteredPassword) {
+
+            showMessage(
+                "Password is required.",
+                false
+            );
+
+            return;
+
+        }
+
+
+        if (
+            enteredPassword.length < 6
+        ) {
+
+            showMessage(
+                "Password must contain at least 6 characters.",
+                false
+            );
+
+            return;
+
+        }
+
+
+        // -----------------------------------------------
+        // SEND REQUEST
+        // -----------------------------------------------
+
+        this.disabled =
+            true;
+
+
+        this.textContent =
+            "CREATING...";
+
+
+        try {
+
+            const response =
+                await apiRequest(
+
+                    "/admin/users",
+
+                    {
+
+                        method:
+                            "POST",
+
+                        body:
+                            JSON.stringify({
+
+                                username:
+                                    enteredUsername,
+
+                                password:
+                                    enteredPassword,
+
+                                role:
+                                    enteredRole
+
+                            })
+
+                    }
+
+                );
+
+
+            if (!response) {
+                return;
+            }
+
+
+            const data =
+                await response
+                    .json()
+                    .catch(
+                        () => null
+                    );
+
+
+            if (
+                !response.ok
+            ) {
+
+                throw new Error(
+                    data?.detail ||
+                    "Unable to create user."
+                );
+
+            }
+
+
+            showMessage(
+                `User "${enteredUsername}" created successfully.`,
+                true
+            );
+
+
+            // -------------------------------------------
+            // CLEAR FORM
+            // -------------------------------------------
+
+            newUsername.value =
+                "";
+
+            newPassword.value =
+                "";
+
+            newRole.value =
+                "user";
+
+
+            // -------------------------------------------
+            // REFRESH USERS
+            // -------------------------------------------
+
+            await loadUsers();
+
+        }
+        catch (error) {
+
+            console.error(
+                "CREATE USER ERROR:",
+                error
+            );
+
+
+            showMessage(
+                error.message,
+                false
+            );
+
+        }
+        finally {
+
+            this.disabled =
+                false;
+
+            this.textContent =
+                "CREATE USER";
+
+        }
+
+    }
+);
+
+
+// =========================================================
+// SHOW MESSAGE
+// =========================================================
+
+function showMessage(
+    message,
+    success
+) {
+
+    createMessage.textContent =
+        message;
+
+
+    createMessage.className =
+        success
+            ? "message success"
+            : "message error";
+
+
+    setTimeout(
+        function () {
+
+            createMessage.className =
+                "message";
+
+        },
+        5000
+    );
+
+}
+
+
+// =========================================================
+// BACK TO DASHBOARD
+// =========================================================
+
+backButton.addEventListener(
+    "click",
+    function () {
+
+        window.location.href =
+            "/dashboard";
+
+    }
+);
+
+
+// =========================================================
+// HTML ESCAPE
+// =========================================================
+
+function escapeHtml(text) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+
+    div.textContent =
+        text ?? "";
+
+
+    return div.innerHTML;
+
+}
+
+
+// =========================================================
+// INITIAL LOAD
+// =========================================================
+
+loadUsers();
+
+
+</script>
+
+</body>
+
+</html>

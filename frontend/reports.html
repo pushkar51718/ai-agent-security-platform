@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Security Reports
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/frontend/style.css"
+    >
+
+    <style>
+
+        .reports-page {
+            margin-top: 40px;
+        }
+
+        .report-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            padding: 22px;
+            margin-bottom: 18px;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .report-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .report-date {
+            color: #94a3b8;
+            margin-top: 6px;
+        }
+
+        .report-stats {
+            display: grid;
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .report-stat {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .report-stat-label {
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .report-stat-value {
+            color: #f8fafc;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .risk-low {
+            color: #22c55e;
+        }
+
+        .risk-critical {
+            color: #ef4444;
+        }
+
+        .risk-medium {
+            color: #f59e0b;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .report-action {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 18px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .view-button {
+            background: #2563eb;
+            color: white;
+        }
+
+        .download-button {
+            background: #16a34a;
+            color: white;
+        }
+
+        .delete-button {
+            background: #dc2626;
+            color: white;
+        }
+
+        .empty-reports {
+            text-align: center;
+            padding: 50px;
+            color: #94a3b8;
+        }
+
+        .report-modal {
+            position: fixed;
+            inset: 0;
+
+            background: rgba(
+                0,
+                0,
+                0,
+                0.75
+            );
+
+            display: none;
+            align-items: center;
+            justify-content: center;
+
+            z-index: 9999;
+
+            padding: 20px;
+        }
+
+        .report-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid #475569;
+
+            border-radius: 14px;
+
+            width: min(
+                900px,
+                100%
+            );
+
+            max-height: 90vh;
+            overflow-y: auto;
+
+            padding: 28px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            background: #dc2626;
+            color: white;
+
+            border: none;
+            border-radius: 7px;
+
+            padding: 8px 14px;
+
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .finding {
+            background: #0f172a;
+            border: 1px solid #334155;
+
+            border-radius: 10px;
+
+            padding: 18px;
+            margin-top: 15px;
+        }
+
+        .finding-pass {
+            border-left: 4px solid #22c55e;
+        }
+
+        .finding-fail {
+            border-left: 4px solid #ef4444;
+        }
+
+        .finding h3 {
+            color: #f8fafc;
+            margin-bottom: 10px;
+        }
+
+        .finding p {
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 800px) {
+
+            .report-stats {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .report-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+
+    <!-- HEADER -->
+
+    <header>
+
+        <div>
+
+            <h1>
+                📄 Security Reports
+            </h1>
+
+            <p>
+                Generated AI agent security assessment reports
+            </p>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <div class="status">
+
+                <span class="status-dot"></span>
+
+                API Online
+
+            </div>
+
+
+            <button
+                class="history-button"
+                onclick="goDashboard()"
+            >
+                DASHBOARD
+            </button>
+
+
+            <button
+                id="logoutButton"
+                class="logout-button"
+            >
+                LOGOUT
+            </button>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- REPORTS -->
+
+    <section class="reports-page">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    Security Assessment Reports
+                </h2>
+
+                <p>
+                    View, download or delete generated reports.
+                </p>
+
+            </div>
+
+
+            <button
+                id="refreshReports"
+                class="history-button"
+            >
+                REFRESH
+            </button>
+
+        </div>
+
+
+        <div id="reportsContainer">
+
+            <div class="empty-reports">
+                Loading reports...
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- MODAL -->
+
+    <div
+        id="reportModal"
+        class="report-modal"
+    >
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>
+                    Security Assessment Report
+                </h2>
+
+                <button
+                    class="modal-close"
+                    onclick="closeReport()"
+                >
+                    CLOSE
+                </button>
+
+            </div>
+
+
+            <div id="reportDetails">
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- FOOTER -->
+
+    <footer>
+
+        <p>
+            AI Agent Security Testing Platform
+        </p>
+
+        <p>
+            Security testing • Risk analysis • Automated scanning
+        </p>
+
+    </footer>
+
+</div>
+
+
+<script>
+
+
+// =========================================================
+// AUTHENTICATION
+// =========================================================
+
+const token =
+    localStorage.getItem(
+        "access_token"
+    );
+
+if (!token) {
+
+    window.location.href = "/";
+
+}
+
+
+// =========================================================
+// LOAD REPORTS
+// =========================================================
+
+async function loadReports() {
+
+    const container =
+        document.getElementById(
+            "reportsContainer"
+        );
+
+    container.innerHTML = `
+        <div class="empty-reports">
+            Loading reports...
+        </div>
+    `;
+
+
+    try {
+
+        const response =
+            await fetch(
+                "/reports",
+                {
+                    method: "GET",
+
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+
+        if (response.status === 401) {
+
+            localStorage.clear();
+
+            window.location.href = "/";
+
+            return;
+
+        }
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to load reports."
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        container.innerHTML = "";
+
+
+        if (
+            !data.reports ||
+            data.reports.length === 0
+        ) {
+
+            container.innerHTML = `
+                <div class="empty-reports">
+                    No security reports available.
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        data.reports.forEach(
+            report => {
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "report-card";
+
+
+                const risk =
+                    String(
+                        report.risk_level || ""
+                    ).toLowerCase();
+
+
+                let riskClass =
+                    "risk-medium";
+
+
+                if (
+                    risk.includes("low")
+                ) {
+
+                    riskClass =
+                        "risk-low";
+
+                }
+                else if (
+                    risk.includes("critical")
+                ) {
+
+                    riskClass =
+                        "risk-critical";
+
+                }
+
+
+                card.innerHTML = `
+
+                    <div class="report-header">
+
+                        <div>
+
+                            <div class="report-title">
+
+                                ${escapeHtml(
+                                    report.agent
+                                )}
+
+                            </div>
+
+                            <div class="report-date">
+
+                                Generated:
+                                ${escapeHtml(
+                                    report.generated_at
+                                )}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="report-stats">
+
+                        <div class="report-stat">
+
+                            <div class="report-stat-label">
+                                Score
+                            </div>
+
+                            <div class="report-stat-value">
+                                ${escapeHtml(
+                                    report.security_score
+                                )}/10
+                            </div>
+
+                        </div>
+
+
+                        <div class="report-stat">
+
+                            <div class="report-stat-label">
+                                Risk
+                            </div>
+
+                            <div
+                                class="report-stat-value ${riskClass}"
+                            >
+                                ${escapeHtml(
+                                    report.risk_level
+                                )}
+                            </div>
+
+                        </div>
+
+
+                        <div class="report-stat">
+
+                            <div class="report-stat-label">
+                                Tests
+                            </div>
+
+                            <div class="report-stat-value">
+                                ${escapeHtml(
+                                    report.total_tests
+                                )}
+                            </div>
+
+                        </div>
+
+
+                        <div class="report-stat">
+
+                            <div class="report-stat-label">
+                                Passed
+                            </div>
+
+                            <div
+                                class="report-stat-value risk-low"
+                            >
+                                ${escapeHtml(
+                                    report.passed
+                                )}
+                            </div>
+
+                        </div>
+
+
+                        <div class="report-stat">
+
+                            <div class="report-stat-label">
+                                Failed
+                            </div>
+
+                            <div
+                                class="report-stat-value risk-critical"
+                            >
+                                ${escapeHtml(
+                                    report.failed
+                                )}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="report-actions">
+
+                        <button
+                            class="report-action view-button"
+                            onclick="viewReport(
+                                '${encodeURIComponent(
+                                    report.filename
+                                )}'
+                            )"
+                        >
+                            👁 VIEW
+                        </button>
+
+
+                        <button
+                            class="report-action download-button"
+                            onclick="downloadReport(
+                                '${encodeURIComponent(
+                                    report.filename
+                                )}'
+                            )"
+                        >
+                            📥 DOWNLOAD
+                        </button>
+
+
+                        <button
+                            class="report-action delete-button"
+                            onclick="deleteReport(
+                                '${encodeURIComponent(
+                                    report.filename
+                                )}'
+                            )"
+                        >
+                            🗑 DELETE
+                        </button>
+
+                    </div>
+
+                `;
+
+
+                container.appendChild(
+                    card
+                );
+
+            }
+        );
+
+
+    }
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+
+        container.innerHTML = `
+            <div class="empty-reports">
+                Failed to load reports.
+            </div>
+        `;
+
+    }
+
+}
+
+
+// =========================================================
+// VIEW REPORT
+// =========================================================
+
+async function viewReport(
+    encodedFilename
+) {
+
+    const filename =
+        decodeURIComponent(
+            encodedFilename
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/reports/view/${encodeURIComponent(filename)}`,
+                {
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to open report."
+            );
+
+        }
+
+
+        const report =
+            await response.json();
+
+
+        const details =
+            document.getElementById(
+                "reportDetails"
+            );
+
+
+        details.innerHTML = `
+
+            <h3>
+                ${escapeHtml(
+                    report.agent
+                )}
+            </h3>
+
+            <p>
+                <strong>Date:</strong>
+                ${escapeHtml(
+                    report.generated_at
+                )}
+            </p>
+
+            <p>
+                <strong>Score:</strong>
+                ${escapeHtml(
+                    report.security_score
+                )}/10
+            </p>
+
+            <p>
+                <strong>Risk:</strong>
+                ${escapeHtml(
+                    report.risk_level
+                )}
+            </p>
+
+            <hr>
+
+            <h3>
+                Security Findings
+            </h3>
+
+        `;
+
+
+        report.results.forEach(
+            result => {
+
+                const finding =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                finding.className =
+                    "finding " +
+                    (
+                        result.result === "PASS"
+                            ? "finding-pass"
+                            : "finding-fail"
+                    );
+
+
+                finding.innerHTML = `
+
+                    <h3>
+                        ${escapeHtml(
+                            result.test_id
+                        )}
+                        -
+                        ${escapeHtml(
+                            result.test_name
+                        )}
+                    </h3>
+
+                    <p>
+                        <strong>Category:</strong>
+                        ${escapeHtml(
+                            result.category
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Severity:</strong>
+                        ${escapeHtml(
+                            result.severity
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Result:</strong>
+                        ${escapeHtml(
+                            result.result
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Attack:</strong>
+                        ${escapeHtml(
+                            result.prompt
+                        )}
+                    </p>
+
+                    <p>
+                        <strong>Agent Response:</strong>
+                        ${escapeHtml(
+                            result.response
+                        )}
+                    </p>
+
+                `;
+
+
+                details.appendChild(
+                    finding
+                );
+
+            }
+        );
+
+
+        document
+            .getElementById(
+                "reportModal"
+            )
+            .classList.add(
+                "active"
+            );
+
+
+    }
+    catch (error) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+// =========================================================
+// DOWNLOAD REPORT
+// =========================================================
+
+function downloadReport(
+    encodedFilename
+) {
+
+    const filename =
+        decodeURIComponent(
+            encodedFilename
+        );
+
+
+    const url =
+        `/reports/download/${encodeURIComponent(filename)}`;
+
+
+    fetch(
+        url,
+        {
+            headers: {
+                "Authorization":
+                    "Bearer " + token
+            }
+        }
+    )
+    .then(
+        response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Download failed."
+                );
+
+            }
+
+            return response.blob();
+
+        }
+    )
+    .then(
+        blob => {
+
+            const downloadUrl =
+                window.URL.createObjectURL(
+                    blob
+                );
+
+
+            const link =
+                document.createElement(
+                    "a"
+                );
+
+
+            link.href =
+                downloadUrl;
+
+            link.download =
+                filename;
+
+
+            document.body.appendChild(
+                link
+            );
+
+            link.click();
+
+            link.remove();
+
+
+            window.URL.revokeObjectURL(
+                downloadUrl
+            );
+
+        }
+    )
+    .catch(
+        error => {
+
+            alert(
+                error.message
+            );
+
+        }
+    );
+
+}
+
+
+// =========================================================
+// DELETE REPORT
+// =========================================================
+
+async function deleteReport(
+    encodedFilename
+) {
+
+    const filename =
+        decodeURIComponent(
+            encodedFilename
+        );
+
+
+    const confirmed =
+        confirm(
+            "Are you sure you want to delete this report?"
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    try {
+
+        const response =
+            await fetch(
+                `/reports/${encodeURIComponent(filename)}`,
+                {
+                    method: "DELETE",
+
+                    headers: {
+                        "Authorization":
+                            "Bearer " + token
+                    }
+                }
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Unable to delete report."
+            );
+
+        }
+
+
+        await loadReports();
+
+
+    }
+    catch (error) {
+
+        alert(
+            error.message
+        );
+
+    }
+
+}
+
+
+// =========================================================
+// CLOSE REPORT
+// =========================================================
+
+function closeReport() {
+
+    document
+        .getElementById(
+            "reportModal"
+        )
+        .classList.remove(
+            "active"
+        );
+
+}
+
+
+// =========================================================
+// DASHBOARD
+// =========================================================
+
+function goDashboard() {
+
+    window.location.href =
+        "/dashboard";
+
+}
+
+
+// =========================================================
+// LOGOUT
+// =========================================================
+
+document
+    .getElementById(
+        "logoutButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            localStorage.clear();
+
+            window.location.href =
+                "/";
+
+        }
+    );
+
+
+// =========================================================
+// HTML ESCAPING
+// =========================================================
+
+function escapeHtml(text) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        text ?? "";
+
+    return div.innerHTML;
+
+}
+
+
+// =========================================================
+// REFRESH
+// =========================================================
+
+document
+    .getElementById(
+        "refreshReports"
+    )
+    .addEventListener(
+        "click",
+        loadReports
+    );
+
+
+// =========================================================
+// INITIAL LOAD
+// =========================================================
+
+loadReports();
+
+</script>
+
+</body>
+
+</html>

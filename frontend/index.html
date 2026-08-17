@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        AI Agent Security Platform
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/frontend/style.css"
+    >
+
+    <style>
+
+        /* =====================================================
+           CHAT BUTTON
+        ====================================================== */
+
+        .chat-button {
+
+            background: #7c3aed;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 12px 18px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+            font-size: 14px;
+
+            transition: 0.2s;
+
+        }
+
+        .chat-button:hover {
+
+            background: #6d28d9;
+
+            transform: translateY(-1px);
+
+        }
+
+
+        /* =====================================================
+           HEADER RESPONSIVE
+        ====================================================== */
+
+        .header-actions {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+        /* =====================================================
+           CHAT INFO CARD
+        ====================================================== */
+
+        .chat-info-section {
+
+            margin-top: 25px;
+
+            background: #1e293b;
+
+            border: 1px solid #334155;
+
+            border-radius: 16px;
+
+            padding: 25px;
+
+        }
+
+
+        .chat-info-content {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 20px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+        .chat-info-title {
+
+            font-size: 22px;
+
+            font-weight: 700;
+
+            margin-bottom: 7px;
+
+        }
+
+
+        .chat-info-description {
+
+            color: #94a3b8;
+
+        }
+
+
+        .open-chat-button {
+
+            background: #7c3aed;
+
+            color: white;
+
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 13px 22px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+            font-size: 15px;
+
+        }
+
+
+        .open-chat-button:hover {
+
+            background: #6d28d9;
+
+        }
+
+
+        /* =====================================================
+           ANALYTICS EXTRA
+        ====================================================== */
+
+        .analytics-section {
+
+            margin-top: 25px;
+
+        }
+
+
+        .analytics-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 20px;
+
+        }
+
+
+        @media (max-width: 1000px) {
+
+            .analytics-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .analytics-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .header-actions {
+
+                width: 100%;
+
+                justify-content: flex-start;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           REPORT BUTTON AREA
+        ====================================================== */
+
+        .report-actions {
+
+            margin: 20px 0;
+
+            width: 100%;
+
+        }
+
+
+        .report-button {
+
+            display: inline-block;
+
+            padding: 12px 22px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+
+            font-size: 14px;
+
+            margin-right: 10px;
+
+        }
+
+
+        #downloadReport {
+
+            background: #111827;
+
+            color: white;
+
+        }
+
+
+        #downloadPdfReport {
+
+            background: #2563eb;
+
+            color: white;
+
+        }
+
+
+        #downloadReport:disabled,
+
+        #downloadPdfReport:disabled {
+
+            opacity: 0.5;
+
+            cursor: not-allowed;
+
+        }
+
+
+        /* =====================================================
+           HIDDEN
+        ====================================================== */
+
+        .hidden {
+
+            display: none !important;
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header>
+
+        <div>
+
+            <h1>
+                🛡 AI Agent Security Platform
+            </h1>
+
+            <p>
+                Automated security testing for AI agents
+            </p>
+
+        </div>
+
+
+        <div class="header-actions">
+
+
+            <!-- =================================================
+                 API STATUS
+            ================================================== -->
+
+            <div class="status">
+
+                <span class="status-dot"></span>
+
+                API Online
+
+            </div>
+
+
+            <!-- =================================================
+                 USER INFORMATION
+            ================================================== -->
+
+            <div class="user-info">
+
+                <span>
+
+                    User:
+
+                    <strong id="loggedUsername">
+                        User
+                    </strong>
+
+                </span>
+
+
+                <span>
+
+                    Role:
+
+                    <strong id="loggedRole">
+                        User
+                    </strong>
+
+                </span>
+
+            </div>
+
+
+            <!-- =================================================
+                 AI CHAT BUTTON
+            ================================================== -->
+
+            <button
+                class="chat-button"
+                type="button"
+                onclick="window.location.href='/chat'"
+            >
+
+                🤖 AI CHAT
+
+            </button>
+
+
+            <!-- =================================================
+                 LOGOUT
+            ================================================== -->
+
+            <button
+                id="logoutButton"
+                class="logout-button"
+                type="button"
+            >
+
+                LOGOUT
+
+            </button>
+
+
+            <!-- =================================================
+                 REPORTS
+            ================================================== -->
+
+            <button
+                class="history-button"
+                type="button"
+                onclick="window.location.href='/frontend/reports.html'"
+            >
+
+                📄 REPORTS
+
+            </button>
+
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =====================================================
+         SECURITY SCAN CONTROL
+    ====================================================== -->
+
+    <section class="control-panel">
+
+        <h2>
+            Run Security Scan
+        </h2>
+
+
+        <p>
+            Select an AI agent and run automated security tests.
+        </p>
+
+
+        <div class="controls">
+
+
+            <select id="agentSelect">
+
+                <option value="secure">
+
+                    Secure Customer Support Agent
+
+                </option>
+
+
+                <option value="vulnerable">
+
+                    Vulnerable Customer Support Agent
+
+                </option>
+
+            </select>
+
+
+            <button
+                id="scanButton"
+                type="button"
+            >
+
+                RUN SECURITY SCAN
+
+            </button>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         AI AGENT CHAT
+    ====================================================== -->
+
+    <section class="chat-info-section">
+
+        <div class="chat-info-content">
+
+            <div>
+
+                <div class="chat-info-title">
+
+                    🤖 AI Agent Chat
+
+                </div>
+
+
+                <div class="chat-info-description">
+
+                    Interact with the selected AI agent and test
+                    its responses before running security scans.
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="open-chat-button"
+                type="button"
+                onclick="window.location.href='/chat'"
+            >
+
+                OPEN AI CHAT
+
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         DASHBOARD ANALYTICS
+    ====================================================== -->
+
+    <section
+        class="analytics-section"
+        id="analyticsSection"
+    >
+
+
+        <div class="section-header">
+
+
+            <div>
+
+                <h2>
+                    📊 Dashboard Analytics
+                </h2>
+
+
+                <p>
+                    Security testing statistics and risk overview
+                </p>
+
+            </div>
+
+
+            <button
+                id="refreshAnalytics"
+                class="history-button"
+                type="button"
+            >
+
+                REFRESH
+
+            </button>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             ANALYTICS CARDS
+        ================================================== -->
+
+        <div class="analytics-grid">
+
+
+            <!-- TOTAL SCANS -->
+
+            <div class="analytics-card">
+
+                <p>
+                    TOTAL SCANS
+                </p>
+
+
+                <strong id="analyticsTotalScans">
+                    0
+                </strong>
+
+            </div>
+
+
+
+            <!-- SECURE SCANS -->
+
+            <div class="analytics-card">
+
+                <p>
+                    SECURE SCANS
+                </p>
+
+
+                <strong
+                    id="analyticsSecureScans"
+                    class="analytics-green"
+                >
+                    0
+                </strong>
+
+            </div>
+
+
+
+            <!-- VULNERABLE SCANS -->
+
+            <div class="analytics-card">
+
+                <p>
+                    VULNERABLE SCANS
+                </p>
+
+
+                <strong
+                    id="analyticsVulnerableScans"
+                    class="analytics-red"
+                >
+                    0
+                </strong>
+
+            </div>
+
+
+
+            <!-- AVERAGE SCORE -->
+
+            <div class="analytics-card">
+
+                <p>
+                    AVERAGE SECURITY SCORE
+                </p>
+
+
+                <strong id="analyticsAverageScore">
+                    0/10
+                </strong>
+
+            </div>
+
+
+
+            <!-- CRITICAL -->
+
+            <div class="analytics-card risk-critical-card">
+
+                <p>
+                    CRITICAL RISK
+                </p>
+
+
+                <strong
+                    id="analyticsCritical"
+                    class="analytics-red"
+                >
+                    0
+                </strong>
+
+            </div>
+
+
+
+            <!-- HIGH -->
+
+            <div class="analytics-card">
+
+                <p>
+                    HIGH RISK
+                </p>
+
+
+                <strong
+                    id="analyticsHigh"
+                    class="analytics-orange"
+                >
+                    0
+                </strong>
+
+            </div>
+
+
+
+            <!-- MEDIUM -->
+
+            <div class="analytics-card">
+
+                <p>
+                    MEDIUM RISK
+                </p>
+
+
+                <strong
+                    id="analyticsMedium"
+                    class="analytics-yellow"
+                >
+                    0
+                </strong>
+
+            </div>
+
+
+
+            <!-- LOW -->
+
+            <div class="analytics-card">
+
+                <p>
+                    LOW RISK
+                </p>
+
+
+                <strong
+                    id="analyticsLow"
+                    class="analytics-green"
+                >
+                    0
+                </strong>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         LOADING
+    ====================================================== -->
+
+    <div
+        id="loading"
+        class="loading hidden"
+    >
+
+        <div class="spinner"></div>
+
+
+        <p>
+            Running security tests...
+        </p>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         ERROR
+    ====================================================== -->
+
+    <div
+        id="error"
+        class="error hidden"
+    ></div>
+
+
+
+    <!-- =====================================================
+         SECURITY DASHBOARD
+    ====================================================== -->
+
+    <section
+        id="dashboard"
+        class="dashboard hidden"
+    >
+
+
+        <!-- =================================================
+             SECURITY SCORE
+        ================================================== -->
+
+        <div class="score-card">
+
+            <p>
+                SECURITY SCORE
+            </p>
+
+
+            <div id="score">
+                --
+            </div>
+
+
+            <span id="risk">
+                Waiting for scan
+            </span>
+
+        </div>
+
+
+
+        <!-- =================================================
+             TOTAL TESTS
+        ================================================== -->
+
+        <div class="stat-card">
+
+            <p>
+                TOTAL TESTS
+            </p>
+
+
+            <strong id="totalTests">
+                0
+            </strong>
+
+        </div>
+
+
+
+        <!-- =================================================
+             PASSED
+        ================================================== -->
+
+        <div class="stat-card">
+
+            <p>
+                PASSED
+            </p>
+
+
+            <strong id="passed">
+                0
+            </strong>
+
+        </div>
+
+
+
+        <!-- =================================================
+             FAILED
+        ================================================== -->
+
+        <div class="stat-card">
+
+            <p>
+                FAILED
+            </p>
+
+
+            <strong id="failed">
+                0
+            </strong>
+
+        </div>
+
+
+
+        <!-- =================================================
+             SECURITY FINDINGS
+        ================================================== -->
+
+        <div class="findings">
+
+
+            <div class="section-header">
+
+
+                <div>
+
+                    <h2>
+                        Security Findings
+                    </h2>
+
+
+                    <p>
+                        Results from automated security tests
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 REPORT BUTTONS
+            ================================================== -->
+
+            <div class="report-actions">
+
+
+                <button
+                    id="downloadReport"
+                    class="report-button"
+                    type="button"
+                    disabled
+                >
+
+                    📄 DOWNLOAD SECURITY REPORT
+
+                </button>
+
+
+                <button
+                    id="downloadPdfReport"
+                    class="report-button"
+                    type="button"
+                    disabled
+                >
+
+                    📑 DOWNLOAD PDF REPORT
+
+                </button>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 RESULTS
+            ================================================== -->
+
+            <div id="results">
+
+                <!-- Security results appear here -->
+
+            </div>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SCAN HISTORY
+    ====================================================== -->
+
+    <section
+        class="history-section"
+        id="historySection"
+    >
+
+
+        <div class="section-header">
+
+
+            <div>
+
+                <h2>
+                    📊 Scan History
+                </h2>
+
+
+                <p>
+                    Previous security scan results
+                </p>
+
+            </div>
+
+
+            <button
+                id="refreshHistory"
+                class="history-button"
+                type="button"
+            >
+
+                REFRESH
+
+            </button>
+
+
+        </div>
+
+
+
+        <!-- =================================================
+             HISTORY TABLE
+        ================================================== -->
+
+        <div class="history-table-container">
+
+
+            <table class="history-table">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Date
+                        </th>
+
+
+                        <th>
+                            User
+                        </th>
+
+
+                        <th>
+                            Agent
+                        </th>
+
+
+                        <th>
+                            Score
+                        </th>
+
+
+                        <th>
+                            Risk
+                        </th>
+
+
+                        <th>
+                            Tests
+                        </th>
+
+
+                        <th>
+                            Passed
+                        </th>
+
+
+                        <th>
+                            Failed
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+
+                <tbody id="historyBody">
+
+                    <tr>
+
+                        <td colspan="8">
+
+                            Loading scan history...
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+            AI Agent Security Testing Platform
+        </p>
+
+
+        <p>
+            Security testing • Risk analysis • Automated scanning
+        </p>
+
+    </footer>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script
+    src="/frontend/script.js"
+></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Local scan/history data
+database/users.db
+database/security_history.db
+database/scan_history.json
+
+# Database backups
+database/*backup*
+database/*old*
+
+# Generated reports
+reports/*
+!reports/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Node
+node_modules/
+
+# Python cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local backup files
+*_backup.py
+*_backup.js
+*_backup.*
